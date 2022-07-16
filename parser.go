@@ -50,6 +50,10 @@ func parse(stringVal string, destVal reflect.Value) (err error) {
 		err = parseInt(stringVal, destVal)
 	case k >= reflect.Float32 && k <= reflect.Float64:
 		err = parseFloat(stringVal, destVal)
+	case k >= reflect.Uint && k <= reflect.Uint64:
+		err = parseUint(stringVal, destVal)
+	case k == reflect.Bool:
+		err = parseBool(stringVal, destVal)
 	case k == reflect.Slice:
 		err = parseSlice(stringVal, destVal)
 	default:
@@ -73,11 +77,29 @@ func parseInt(in string, dest reflect.Value) error {
 }
 
 func parseFloat(in string, dest reflect.Value) error {
-	floatVal, err := strconv.ParseFloat(in, 32)
+	floatVal, err := strconv.ParseFloat(in, 64)
 	if err != nil {
 		return fmt.Errorf("parseFloat %w", err)
 	}
 	dest.SetFloat(floatVal)
+	return nil
+}
+
+func parseUint(in string, dest reflect.Value) error {
+	uintVal, err := strconv.ParseUint(in, 10, 0)
+	if err != nil {
+		return fmt.Errorf("parseUint %w", err)
+	}
+	dest.SetUint(uintVal)
+	return nil
+}
+
+func parseBool(in string, dest reflect.Value) error {
+	boolVal, err := strconv.ParseBool(in)
+	if err != nil {
+		return fmt.Errorf("parseBool %w", err)
+	}
+	dest.SetBool(boolVal)
 	return nil
 }
 
